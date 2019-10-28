@@ -1,0 +1,64 @@
+:root {
+    --cell-size: 52px;
+}
+
+main {
+    max-width: 50%;
+    width: 50%;
+    margin: auto;
+    min-height: 700px;
+    overflow: hidden;
+}
+
+h1 {
+    text-align: center;
+}
+
+.user-display {
+    text-align: center;
+    border-radius: 10px;
+    display: inline-block;
+    width: 15%;
+    margin-right: 5px;
+}
+
+
+.conditions__input,
+.controls,
+.button,
+.messageBox {
+    margin-bottom: 5px;
+}
+
+.messageBox {
+    text-align: center;
+}
+
+.board {
+    transform: translateY(500px);
+    width: 360px;
+    height: 360px;
+    margin: auto;
+    border: 2px solid black;
+    transition: 0.5s;
+    opacity: 0.7;
+}
+
+.board--visible {
+    transform: translateY(0px);
+    opacity: 1;
+}
+
+.cell {
+    float: left;
+    width: var(--cell-size);
+    height: var(--cell-size);
+    background-image: radial-gradient(#fff, #e6e6e6);
+    border: 1px solid black;
+    font-size: calc(var(--cell-size) - 4px);
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+    line-height: calc(var(--cell-size));
+    box-sizing: border-box;
+}

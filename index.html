@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Saper</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+
+</head>
+
+<body>
+    <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+    <body cz-shortcut-listen="true">
+        <main>
+            <h1>Saper</h1>
+            <p class="instruction">Podaj ilość min i wielkość planszy, a następnie rozpocznij grę.<br>
+                Lewy przycisk myszy: Zaznacz pole<br>
+                Prawy przycisk myszy: Umieść flagę</p>
+
+            <div class="conditions">
+                <label for="boardSizeId">Podaj wielkość planszy (1-10):</label>
+                <input class="conditions__input" min="3" max="10" type="number" name="boardSizeName" id="boardSizeId"
+                    placeholder="1-10" value="10">
+                <br>
+                <label for="mineId">Podaj ilość min:</label>
+                <input class="conditions__input" type="number" name="mineName" id="mineId" value="5">
+
+
+
+            </div>
+
+            <div class="controls">
+                <button class="button" id="new-game-button">Rozpocznij nową grę</button><br>
+                Sekundy:<div class="user-display" id="time">200</div>
+                Min pozostało:<div class="user-display" id="mines-remaining">10</div>
+
+
+
+            </div>
+
+            <div class="messageBox" id="messageBox">Rozpocznij
+                grę
+            </div>
+            <div id="board" class="board">
+            </div>
+            <br>
+
+
+        </main>
+
+    </body>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
