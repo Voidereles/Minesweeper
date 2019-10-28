@@ -96,7 +96,6 @@ let handleClick = function (id) {
                             if (typeof board[neighbor] !== 'undefined' && !board[neighbor].flagged && !board[neighbor].opened) {
                                 //jesli element tablicy nie jest undefined, nie jest oflagowany i nie jest otwarty
                                 handleClick(neighbor); //wywolanie samej siebie ponownie
-                                console.log('test');
                             }
                         }
                     }
@@ -280,7 +279,6 @@ let minesRemaining;
 
 let root = document.documentElement;
 // let boardWidth = root.style.getPropertyValue('--board-width');
-// console.log(boardWidth + 'px');
 var board = newGame(boardSize, mines);
 
 // root.style.setProperty('--cell-size', 360 / boardSize + "px");
