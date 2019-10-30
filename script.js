@@ -1,21 +1,22 @@
-function Cell(row, column, opened, flagged, mined, neighborMineCount) {
-    return {
-        id: row + "_" + column,
-        row: row,
-        column: column,
-        opened: opened,
-        flagged: flagged,
-        mined: mined,
-        neighborMineCount: neighborMineCount
+class Cell {
+    constructor(row, column) {
+        this.id = row + "_" + column;
+        this.row = row;
+        this.column = column;
+        this.opened = false;
+        this.flagged = false;
+        this.mined = false;
+        this.neighborMineCount = 0;
     }
 }
 
-function Board(boardSize, mineCount) {
+const Board = (boardSize, mineCount) => {
     let board = {};
     for (let row = 0; row < boardSize; row++) {
         for (let column = 0; column < boardSize; column++) {
-            board[row + "_" + column] = Cell(row, column, false, false, false, 0);
-            //row, column, opened, flagged, mined, neighborMineCount
+
+            let id = `${row}_${column}`;
+            board[id] = new Cell(id, row, column);
         }
     }
 
@@ -26,14 +27,20 @@ function Board(boardSize, mineCount) {
 
 
 
+
 let initializeCells = function (boardSize) {
     let row = 0;
     let column = 0;
     $(".cell").each(function () {
 
         //bierzemy każdy element o klasie .cell
-        $(this).attr("id", row + "_" + column).css('color', 'black').text("");
-        $('#' + row + "_" + column).css('background-image', 'radial-gradient(#fff,#e6e6e6)');
+        // $(this).attr("id", row + "_" + column).css('color', 'black').text("");
+        // $('#' + row + "_" + column).css('background-image', 'radial-gradient(#fff,#e6e6e6)');
+
+        let id = `${row}_${column}`;
+        $(this).attr("id", id).css('color', 'black').text("");
+        $(`#${id}`).css('background-image', 'radial-gradient(#fff,#e6e6e6)');
+
 
         column++;
         if (column >= boardSize) {
@@ -94,8 +101,9 @@ let handleClick = function (id) {
                         for (let i = 0; i < neighbors.length; i++) {
                             let neighbor = neighbors[i];
                             if (typeof board[neighbor] !== 'undefined' && !board[neighbor].flagged && !board[neighbor].opened) {
-                                //jesli element tablicy nie jest undefined, nie jest oflagowany i nie jest otwarty
-                                handleClick(neighbor); //wywolanie samej siebie ponownie
+                                //jesli element tablicy nie jest undefined, nie jest oflagowany i nie jest otwarty, 
+                                //rekurencja sluzy do odkrywania pól w saperze
+                                handleClick(neighbor); //wywolani e samej siebie ponownie
                             }
                         }
                     }
@@ -187,7 +195,6 @@ let calculateNeighborMineCounts = function (board, boardSize) {
 
 let getNeighbors = function (id) {
     let row = parseInt(id.substring(0, id.indexOf('_')));
-
     let column = parseInt(id.substring(id.indexOf('_') + 1, id.length));
 
     let neighbors = [];
@@ -221,16 +228,30 @@ const getNumberColor = number => {
 const ob = ['black', 'blue', 'green', 'red', 'orange'];
 const getNumberColor = number => ob[number] || 'black';
 
-let isMined = function (board, id) {
-    let cell = board[id];
-    let mined = 0;
-    if (typeof cell !== 'undefined') {
-        mined = cell.mined ? 1 : 0;
-        //jeśli cell.mined to prawda, to 1, w inny przypadku 0
-    }
-    return mined;
-}
+// let isMined = function (board, id) {
+//     let cell = board[id];
+//     let mined = 0;
+//     if (typeof cell !== 'undefined') {
+//         mined = cell.mined ? 1 : 0;
+//         //jeśli cell.mined to prawda, to 1, w inny przypadku 0
+//     }
+//     return mined;
+// }
 
+// const isMined = (board, id) => {
+//     const cell = board[id];
+//     let mined = 0;
+//     if (typeof cell !== 'undefined') {
+//         mined = cell.mined ? 1 : 0;
+//         //jeśli cell.mined to prawda, to 1, w inny przypadku 0
+//     }
+//     return cell.mined;
+// }
+
+let isMined = (board, id) => {
+    let cell = board[id];
+    return cell && cell.mined;
+}
 
 let getRandomInteger = function (min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
