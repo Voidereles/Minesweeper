@@ -1,3 +1,6 @@
+const messageBox = document.querySelector('#messageBox');
+messageBox.style.color = 'white';
+
 class Cell {
     constructor(row, column) {
         this.id = row + "_" + column;
@@ -24,16 +27,15 @@ function Board(boardSize, mineCount) {
     return board;
 }
 
-
-
-let initializeCells = function (boardSize) {
+const initializeCells = (boardSize) => {
     let row = 0;
     let column = 0;
-    $(".cell").each(function () {
-
-        //bierzemy każdy element o klasie .cell
-        $(this).attr("id", row + "_" + column).css('color', 'black').text("");
-        $('#' + row + "_" + column).css('background-image', 'radial-gradient(#fff,#e6e6e6)');
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach((cell) => {
+        cell.id = row + "_" + column;
+        cell.style.color = 'black';
+        cell.textContent = '';
+        cell.style.backgroundImage = 'radial-gradient(#fff,#e6e6e6)';
 
         column++;
         if (column >= boardSize) {
@@ -41,94 +43,151 @@ let initializeCells = function (boardSize) {
             row++;
         }
 
-        $(this).off().click(function (e) {
-            handleClick($(this).attr("id"));
-
-            let isVictory = true;
-            let cells = Object.keys(board);
-            for (let i = 0; i < cells.length; i++) {
-                if (!board[cells[i]].mined) {
-                    //sprawdzamy, czy każda komórka bez miny została otworzona
-                    if (!board[cells[i]].opened) {
-                        isVictory = false;
-                        break;
-                    }
-                }
-            }
-
-            if (isVictory) {
-                gameOver = true;
-                $('#messageBox').text("Wygrałeś!").css({ 'color': 'white', 'background-color': 'green' });
-                clearInterval(timeout);
-            }
-        });
-
-        $(this).contextmenu(function (e) {
-            handleRightClick($(this).attr("id"));
-            return false;
-        });
-    })
-}
+        cell.addEventListener("click", handleClick);
+        cell.addEventListener("contextmenu", handleRightClick)
+    });
+};
 
 
-let handleClick = function (id) {
-    if (!gameOver) { //jesli nie ma konca gry
+// $(".cell").each(function () {
 
-        let cell = board[id];
-        let $cell = $('#' + id);
-        if (!cell.opened) { //jesli nie jest juz otwarta komorka
-            if (!cell.flagged) { //jesli nie jest oflagowana. Ignorujemy klikniecie, jesli komorka jest już otwarta lub oflagowana
-                if (cell.mined) {
-                    loss();
-                    $cell.html(MINE).css('color', 'red');
-                }
-                else {
-                    cell.opened = true;
-                    if (cell.neighborMineCount > 0) {
-                        let color = getNumberColor(cell.neighborMineCount);
-                        $cell.html(cell.neighborMineCount).css({ 'color': color, 'background-image': 'radial-gradient(ff11ec,#ff0000)' });
-                    }
-                    else {
-                        $cell.html("").css('background-image', 'radial-gradient(#e6e6e6,#aaa)');
-                        let neighbors = getNeighbors(id);
-                        for (let i = 0; i < neighbors.length; i++) {
-                            let neighbor = neighbors[i];
-                            if (typeof board[neighbor] !== 'undefined' && !board[neighbor].flagged && !board[neighbor].opened) {
-                                //jesli element tablicy nie jest undefined, nie jest oflagowany i nie jest otwarty
-                                handleClick(neighbor); //wywolanie samej siebie ponownie
-                            }
+//     //bierzemy każdy element o klasie .cell
+//     const id = row + "_" + column;
+//     $(this).attr("id", id).css('color', 'black').text("");
+//     $('#' + id).css('background-image', 'radial-gradient(#fff,#e6e6e6)');
+
+//     column++;
+//     if (column >= boardSize) {
+//         column = 0;
+//         row++;
+//     }
+
+//     $(this).off().click(function (e) {
+//         handleClick($(this).attr("id"));
+
+//         let isVictory = true;
+//         let cells = Object.keys(board);
+//         for (let i = 0; i < cells.length; i++) {
+//             if (!board[cells[i]].mined) {
+//                 //sprawdzamy, czy każda komórka bez miny została otworzona
+//                 if (!board[cells[i]].opened) {
+//                     isVictory = false;
+//                     break;
+//                 }
+//             }
+//         }
+
+//         if (isVictory) {
+//             gameOver = true;
+//             $('#messageBox').text("Wygrałeś!").css({ 'color': 'white', 'background-color': 'green' });
+//             clearInterval(timeout);
+//         }
+//     });
+
+//     $(this).contextmenu(function (e) {
+//         handleRightClick($(this).attr("id"));
+//         return false;
+//     });
+// })
+// }
+
+
+const handleClick = function (event) {
+    const id = event.currentTarget ? event.currentTarget.id : event;
+    const cellElement = event.currentTarget || document.getElementById(event);
+    if (!gameOver) {
+        const cell = board[id];
+
+        if (!cell.flagged && !cell.opened) {
+            if (cell.mined) {
+                loss();
+                cellElement.innerHTML = MINE;
+                cellElement.style.color = 'red';
+            } else {
+                cell.opened = true;
+                if (cell.neighborMineCount > 0) {
+                    const color = getNumberColor(cell.neighborMineCount);
+                    cellElement.innerHTML = cell.neighborMineCount;
+                    cellElement.style.color = color;
+                    cellElement.style.backgroundImage = 'radial-gradient(ff11ec,#ff0000)';
+                } else {
+                    cellElement.innerHTML = '';
+                    cellElement.style.backgroundImage = 'radial-gradient(#e6e6e6,#aaa)';
+                    const neighbors = getNeighbors(id);
+
+                    // for (let i = 0; i < neighbors.length; i++) {
+                    //     const neighbor = neighbors[i];
+                    //     if (board[neighbor] && !board[neighbor].flagged && !board[neighbor].opened) {
+                    //         handleClick(neighbor);
+                    //     }
+                    // }
+
+                    neighbors.forEach((neighbor) => {
+                        const canClickOnNeighbor = board[neighbor] && !board[neighbor].flagged && !board[neighbor].opened;
+                        if (canClickOnNeighbor) {
+                            handleClick(neighbor);
                         }
-                    }
+                    });
                 }
             }
         }
-
+        checkWin();
+        cellElement.removeEventListener("click", handleClick);
     }
-}
+};
 
+const checkWin = () => {
+    // let isVictory = true;
+    let cells = Object.keys(board);
+    // for (let i = 0; i < cells.length; i++) {
+    //     if (!board[cells[i]].mined) {
+    //         if (!board[cells[i]].opened) {
+    //             isVictory = false;
+    //             break;
+    //         }
+    //     }
+    // }
+    //To co w komentarzu następne kilka linijek zastępuje
 
-let handleRightClick = function (id) {
+    const isVictory = cells.every((cell) => {
+        return board[cell].mined || board[cell].opened;
+    });
+
+    if (isVictory) {
+        gameOver = true;
+        // const messageBox = document.querySelector('#messageBox');
+        messageBox.textContent = 'Wygrałeś';
+        messageBox.style.backgroundColor = 'green';
+        clearInterval(timeout);
+    }
+};
+
+const handleRightClick = (event) => {
+    const id = event.currentTarget.id;
+    const element = event.currentTarget;
     if (!gameOver) {
-        let cell = board[id];
-        let $cell = $('#' + id);
+        const cell = board[id];
         if (!cell.opened) {
             if (!cell.flagged && minesRemaining > 0) {
                 cell.flagged = true;
-                $cell.html(FLAG).css('color', 'red');
+                element.innerHTML = FLAG;
+                element.style.color = 'red';
                 minesRemaining--;
-            }
-            else if (cell.flagged) {
+            } else if (cell.flagged) {
                 cell.flagged = false;
-                $cell.html("").css('color', 'black');
+                element.innerHTML = '';
+                element.style.color = 'black';
                 minesRemaining++;
             }
-
-            $('#mines-remaining').text(minesRemaining);
+            const minesElement = document.querySelector('#mines-remaining');
+            minesElement.textContent = minesRemaining;
         }
     }
-}
+    return false;
+};
 
-let loss = function () {
+
+const loss = function () {
     //wywolywana funkcja gdy gracz przegrywa
     gameOver = true;
     $('#messageBox').text('Przegrałeś!').css({ 'color': 'white', 'background-color': 'red' });
@@ -143,17 +202,39 @@ let loss = function () {
     clearInterval(timeout);
 }
 
-let randomlyAssignMines = function (board, mineCount) {
+// const loss = () => {
+//     //wywolywana funkcja gdy gracz przegrywa
+//     gameOver = true;
+//     // const messageBox = document.querySelector('#messageBox');
+//     messageBox.textContent = 'Przegrałeś';
+//     // messageBox.style.color = 'white';
+//     messageBox.style.backgroundColor = 'red';
+//     const cells = Object.keys(board);
+//     cells.forEach((cell) => {
+//         if (board[cell].mined && !board[cell].flagged) {
+//             const cellElement = document.querySelector(`#${board[cell].id}`);
+//             cellElement.innerHTML = MINE;
+//             cellElement.style.color = 'black';
+//         }
+//     });
+//     clearInterval(timeout);
+// };
+
+const randomlyAssignMines = function (board, mineCount) {
     let mineCoordinates = [];
+
     for (let i = 0; i < mineCount; i++) {
         let randomRowCoordinate = getRandomInteger(0, boardSize);
         let randomColumnCoordinate = getRandomInteger(0, boardSize);
+
         let cell = randomRowCoordinate + "_" + randomColumnCoordinate;
+
         while (mineCoordinates.includes(cell)) {
             randomRowCoordinate = getRandomInteger(0, boardSize);
             randomColumnCoordinate = getRandomInteger(0, boardSize);
             cell = randomRowCoordinate + "_" + randomColumnCoordinate;
         }
+
         mineCoordinates.push(cell);
         board[cell].mined = true;
     }
@@ -202,8 +283,6 @@ let getNeighbors = function (id) {
         }
     }
 
-
-
     return neighbors;
 
 }
@@ -242,7 +321,9 @@ let getRandomInteger = function (min, max) {
 
 var newGame = function (boardSize, mines) {
     $('#time').text('0');
-    $('#messageBox').text('Rusz się!').css({ 'color': 'rgb(255,255,255)', 'background-color': 'rgb(102,178,255)' });
+
+    messageBox.textContent = 'Rusz się!';
+    messageBox.style.backgroundColor = 'blue';
 
     minesRemaining = mines;
     $('#mines-remaining').text(minesRemaining);
@@ -282,6 +363,10 @@ let root = document.documentElement;
 var board = newGame(boardSize, mines);
 
 // root.style.setProperty('--cell-size', 360 / boardSize + "px");
+
+
+//clearInterval, żeby na początku nie liczyło sekund.
+clearInterval(timeout);
 
 $('#new-game-button').click(function () {
     boardSize = document.getElementById('boardSizeId').value;
