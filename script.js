@@ -374,19 +374,19 @@ var board = newGame(boardSize, mines);
 //clearInterval, żeby na początku nie liczyło sekund.
 clearInterval(timeout);
 
-$('#new-game-button').click(() => {
+
+document.getElementById('new-game-button').addEventListener('click', () => {
     boardSize = document.getElementById('boardSizeId').value;
     mines = document.getElementById('mineId').value;
     document.getElementById("board").innerHTML = '';
     for (let i = 0; i < boardSize * boardSize; i++) {
-        let newCell = document.createElement("div");
+        const newCell = document.createElement("div");
         newCell.className = "cell";
-
         document.getElementById("board").appendChild(newCell);
     }
 
 
-    board = newGame(boardSize, mines); /// <---------------
+    board = newGame(boardSize, mines);
     root.style.setProperty('--cell-size', 360 / boardSize + "px");
-    $('.board').addClass('board--visible');
-})
+    document.querySelector('.board').classList.add('board--visible');
+});
