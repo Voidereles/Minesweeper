@@ -368,6 +368,7 @@ let minesRemaining;
 const root = document.documentElement;
 // let boardWidth = root.style.getPropertyValue('--board-width');
 // var board = newGame(boardSize, mines);
+let board;
 
 // root.style.setProperty('--cell-size', 360 / boardSize + "px");
 
@@ -379,6 +380,10 @@ document.getElementById('new-game-button').addEventListener('click', () => {
     boardSize = document.getElementById('boardSizeId').value;
     mines = document.getElementById('mineId').value;
     document.getElementById("board").innerHTML = '';
+    if (mines >= boardSize * boardSize) {
+        mines = boardSize * boardSize - 1;
+    }
+
     for (let i = 0; i < boardSize * boardSize; i++) {
         const newCell = document.createElement("div");
         newCell.className = "cell";
@@ -389,4 +394,6 @@ document.getElementById('new-game-button').addEventListener('click', () => {
     board = newGame(boardSize, mines);
     root.style.setProperty('--cell-size', 360 / boardSize + "px");
     document.querySelector('.board').classList.add('board--visible');
+
+
 });
