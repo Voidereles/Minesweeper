@@ -236,13 +236,12 @@ const randomlyAssignMines = (board, mineCount) => {
         mineCoordinates.push(cell);
         board[cell].mined = true;
     }
-    return board;
 }
 
 
 const calculateNeighborMineCounts = (board, boardSize) => {
     let cell;
-    let neighborMineCount = 0;
+    // let neighborMineCount = 0;
     for (let row = 0; row < boardSize; row++) {
         for (let column = 0; column < boardSize; column++) {
             const id = row + "_" + column;
@@ -274,24 +273,21 @@ const calculateNeighborMineCounts = (board, boardSize) => {
 }
 
 const getNeighbors = (id) => {
-    let row = parseInt(id.substring(0, id.indexOf('_')));
+    const row = parseInt(id.substring(0, id.indexOf('_')));
+    const column = parseInt(id.substring(id.indexOf('_') + 1, id.length));
 
-    let column = parseInt(id.substring(id.indexOf('_') + 1, id.length));
-
-    let neighbors = [];
-    for (let i = -1; i <= 1; i++) {
-        for (let j = -1; j <= 1; j++) {
-            if ((row < boardSize || row > boardSize || column < boardSize || column > boardSize)) {
-
-                x = row + i;
-                y = column + j;
+    const neighbors = [];
+    if (row < boardSize || row > boardSize || column < boardSize || column > boardSize) {
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                const x = row + i;
+                const y = column + j;
                 neighbors.push(x + "_" + y);
             }
         }
     }
 
     return neighbors;
-
 }
 
 //w zaleznosci od tego, jaki numer, bedzie rozny kolor
@@ -307,45 +303,49 @@ const getNumberColor = number => {
 const ob = ['black', 'blue', 'green', 'red', 'orange'];
 const getNumberColor = number => ob[number] || 'black';
 
-let isMined = function (board, id) {
-    let cell = board[id];
-    let mined = 0;
-    if (typeof cell !== 'undefined') {
-        mined = cell.mined ? 1 : 0;
-        //jeśli cell.mined to prawda, to 1, w inny przypadku 0
-    }
-    return mined;
-}
+// const isMined = (board, id) => {
+//     const cell = board[id];
+//     let mined = 0;
+//     if (typeof cell !== 'undefined') {
+//         mined = cell.mined ? 1 : 0;
+//         //jeśli cell.mined to prawda, to 1, w inny przypadku 0
+//     }
+//     return mined;
+// }
+
+const isMined = (board, id) => {
+    const cell = board[id];
+    return cell ? Number(cell.mined) : 0;
+    //funkcja odpowiada na pytanie, czy jest pole zaminowane czy nie, 
+    //jeśli jest, to powinno zwrócić 1, jeśli nie, to 0
+    //Number sprawi, że zwróci 1 a nie "true". 
+};
 
 
-let getRandomInteger = function (min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-    //zwraca losową liczbę która jest liczbą całkowitą, służyć będzie do min
-}
+const getRandomInteger = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+//bez klamr to to co jest po strzałce to po prostu co funkcja zwraca (return)
 
 
-
-
-var newGame = function (boardSize, mines) {
-    $('#time').text('0');
-
+const newGame = (boardSize, mines) => {
+    document.getElementById('time').textContent = 0;
     messageBox.textContent = 'Rusz się!';
     messageBox.style.backgroundColor = 'blue';
 
     minesRemaining = mines;
-    $('#mines-remaining').text(minesRemaining);
+    document.getElementById('mines-remaining').textContent = minesRemaining;
+
     gameOver = false;
     initializeCells(boardSize);
     board = Board(boardSize, mines);
     timer = 0;
     clearInterval(timeout);
 
-    timeout = setInterval(function () {
+    timeout = setInterval(() => {
         timer++;
         if (timer >= 999) {
             timer = 999;
         }
-        $('#time').text(timer);
+        document.getElementById('time').textContent = timer;
 
     }, 1000);
 
@@ -365,17 +365,16 @@ let minesRemaining;
 
 //każda komórka ma swoje id, więc można łatwo do niej nmieć dostep
 
-let root = document.documentElement;
+const root = document.documentElement;
 // let boardWidth = root.style.getPropertyValue('--board-width');
 var board = newGame(boardSize, mines);
 
 // root.style.setProperty('--cell-size', 360 / boardSize + "px");
 
-
 //clearInterval, żeby na początku nie liczyło sekund.
 clearInterval(timeout);
 
-$('#new-game-button').click(function () {
+$('#new-game-button').click(() => {
     boardSize = document.getElementById('boardSizeId').value;
     mines = document.getElementById('mineId').value;
     document.getElementById("board").innerHTML = '';
@@ -387,7 +386,7 @@ $('#new-game-button').click(function () {
     }
 
 
-    board = newGame(boardSize, mines);
+    board = newGame(boardSize, mines); /// <---------------
     root.style.setProperty('--cell-size', 360 / boardSize + "px");
     $('.board').addClass('board--visible');
 })
