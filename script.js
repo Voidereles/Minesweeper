@@ -367,7 +367,7 @@ let minesRemaining;
 
 const root = document.documentElement;
 // let boardWidth = root.style.getPropertyValue('--board-width');
-var board = newGame(boardSize, mines);
+// var board = newGame(boardSize, mines);
 
 // root.style.setProperty('--cell-size', 360 / boardSize + "px");
 
