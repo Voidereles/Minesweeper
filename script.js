@@ -22,8 +22,8 @@ function Board(boardSize, mineCount) {
         }
     }
 
-    board = randomlyAssignMines(board, mineCount);
-    board = calculateNeighborMineCounts(board, boardSize);
+    randomlyAssignMines(board, mineCount);
+    calculateNeighborMineCounts(board, boardSize);
     return board;
 }
 
@@ -187,41 +187,39 @@ const handleRightClick = (event) => {
 };
 
 
-const loss = function () {
-    //wywolywana funkcja gdy gracz przegrywa
-    gameOver = true;
-    $('#messageBox').text('Przegrałeś!').css({ 'color': 'white', 'background-color': 'red' });
-    let cells = Object.keys(board);
-
-    for (let i = 0; i < cells.length; i++) {
-        if (board[cells[i]].mined && !board[cells[i]].flagged) {
-            $('#' + board[cells[i]].id).html(MINE).css('color', 'black');
-        }
-    }
-
-    clearInterval(timeout);
-}
-
 // const loss = () => {
 //     //wywolywana funkcja gdy gracz przegrywa
 //     gameOver = true;
-//     // const messageBox = document.querySelector('#messageBox');
-//     messageBox.textContent = 'Przegrałeś';
-//     // messageBox.style.color = 'white';
-//     messageBox.style.backgroundColor = 'red';
-//     const cells = Object.keys(board);
-//     cells.forEach((cell) => {
-//         if (board[cell].mined && !board[cell].flagged) {
-//             const cellElement = document.querySelector(`#${board[cell].id}`);
-//             cellElement.innerHTML = MINE;
-//             cellElement.style.color = 'black';
-//         }
-//     });
-//     clearInterval(timeout);
-// };
+//     $('#messageBox').text('Przegrałeś!').css({ 'color': 'white', 'background-color': 'red' });
+//     let cells = Object.keys(board);
 
-const randomlyAssignMines = function (board, mineCount) {
-    let mineCoordinates = [];
+//     for (let i = 0; i < cells.length; i++) {
+//         if (board[cells[i]].mined && !board[cells[i]].flagged) {
+//             $('#' + board[cells[i]].id).html(MINE).css('color', 'black');
+//         }
+//     }
+
+//     clearInterval(timeout);
+// }
+
+const loss = () => {
+    //wywolywana funkcja gdy gracz przegrywa
+    gameOver = true;
+    messageBox.textContent = 'Przegrałeś';
+    messageBox.style.backgroundColor = 'red';
+    const cells = Object.keys(board);
+    cells.forEach((cell) => {
+        if (board[cell].mined && !board[cell].flagged) {
+            const cellElement = document.getElementById(`${board[cell].id}`);
+            cellElement.innerHTML = MINE;
+            cellElement.style.color = 'black';
+        }
+    });
+    clearInterval(timeout);
+};
+
+const randomlyAssignMines = (board, mineCount) => {
+    const mineCoordinates = [];
 
     for (let i = 0; i < mineCount; i++) {
         let randomRowCoordinate = getRandomInteger(0, boardSize);
@@ -242,31 +240,40 @@ const randomlyAssignMines = function (board, mineCount) {
 }
 
 
-let calculateNeighborMineCounts = function (board, boardSize) {
+const calculateNeighborMineCounts = (board, boardSize) => {
     let cell;
     let neighborMineCount = 0;
     for (let row = 0; row < boardSize; row++) {
         for (let column = 0; column < boardSize; column++) {
-            let id = row + "_" + column;
+            const id = row + "_" + column;
             cell = board[id];
             //najpierw sprawdzamy, czy komórka jest zaminowana
-            if (!cell.mined) {
-                let neighbors = getNeighbors(id);
-                //uzywamy pomocniczej metody getNeighbors, która zwraca id 
-                //komórki, wyzej jest pętla, więc ta funkcja będzie wywołana wiele razy
-                neighborMineCount = 0;
-                for (let i = 0; i < neighbors.length; i++) {
-                    neighborMineCount += isMined(board, neighbors[i]);
-                }
+            // if (!cell.mined) {
+            //     const neighbors = getNeighbors(id);
+            //     //uzywamy pomocniczej metody getNeighbors, która zwraca id 
+            //     //komórki, wyzej jest pętla, więc ta funkcja będzie wywołana wiele razy
+            //     neighborMineCount = 0;
+            //     for (let i = 0; i < neighbors.length; i++) {
+            //         neighborMineCount += isMined(board, neighbors[i]);
+            //     }
 
-                cell.neighborMineCount = neighborMineCount;
+            //     cell.neighborMineCount = neighborMineCount;
+            // }
+
+            if (!cell.mined) {
+                const neighbors = getNeighbors(id);
+                cell.neighborMineCount = neighbors.reduce((acc, current) => acc + isMined(board, current), 0);
+                // do tej zmiennej accc przypisuje się wynik z tej reduce
+                // reduce leci po całej tablicy neighbors jak pętla i przypisuje do zmiennej acc wynik acc + isMined(board, current)
+                // startową wartością jest 0, więc jeżeli nie ma żadnych sąsiadów, to neighborMineCount bedzie wynosił 0
             }
+
+            // 
         }
     }
-    return board;
 }
 
-let getNeighbors = function (id) {
+const getNeighbors = (id) => {
     let row = parseInt(id.substring(0, id.indexOf('_')));
 
     let column = parseInt(id.substring(id.indexOf('_') + 1, id.length));
