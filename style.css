@@ -2,7 +2,7 @@
     --cell-size: 52px;
 }
 
-main {
+.main {
     max-width: 50%;
     width: 50%;
     margin: auto;
@@ -61,4 +61,11 @@ h1 {
     vertical-align: middle;
     line-height: calc(var(--cell-size));
     box-sizing: border-box;
+}
+
+@media(max-width:992px) {
+    .main {
+        max-width: 99%;
+        width: 99%;
+    }
 }
