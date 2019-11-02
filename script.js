@@ -183,6 +183,7 @@ const handleRightClick = (event) => {
             minesElement.textContent = minesRemaining;
         }
     }
+    event.preventDefault();
     return false;
 };
 
